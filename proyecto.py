@@ -41,7 +41,7 @@ def buscar_producto(id_producto):
     cursor.execute("SELECT * FROM productos WHERE id = ?", (id_producto,))
     producto = cursor.fetchone()
     if producto:
-        print(Back.CYAN + "\n Prodcuto: " + Style.RESET_ALL)
+        print(Back.CYAN + "Produc3to: " + Style.RESET_ALL)
         print(f"ID: {producto[0]}, Producto: {producto[1]}, Descripción: {producto[2]}, Cantidad: {producto[3]}, Precio: $ {producto[4]:.2f}, Categoria: {producto[5]}")
     else:
         print(Fore.RED + "Producto no encontrado en el inventario." + Style.RESET_ALL)
@@ -50,8 +50,10 @@ def buscar_producto_nombre(nombre_producto):
     """Buscar productos en el inventario por Nombre."""
     cursor.execute("SELECT * FROM productos WHERE nombre = ?", (nombre_producto,))
     productos = cursor.fetchall()
-    for producto in productos:
-        print(f"ID: {producto[0]}, Producto: {producto[1]}, Descripción: {producto[2]}, Cantidad: {producto[3]}, Precio: $ {producto[4]:.2f}, Categoria: {producto[5]}")
+    if productos: 
+        print(Back.CYAN + "Producto: " + Style.RESET_ALL)
+        for producto in productos:
+            print(f"ID: {producto[0]}, Nombre: {producto[1]}, Descripción: {producto[2]}, Cantidad: {producto[3]}, Precio: $ {producto[4]:.2f}, Categoria: {producto[5]}")
     else:
         print(Fore.RED + "Producto no encontrado en el inventario." + Style.RESET_ALL)
 
@@ -60,12 +62,47 @@ def actualizar_producto(id_producto):
     cursor.execute("SELECT * FROM productos WHERE id = ?", (id_producto,))
     producto = cursor.fetchone()
     if producto:
-        print(f"Producto actual: {producto}")
-        nombre = input("Nuevo nombre: ")
-        descripcion = input("Nueva descripción: ")
-        cantidad = int(input("Nueva cantidad: "))
-        precio = float(input("Nuevo precio: "))
-        categoria = input("Nueva categoría: ")
+        print(f"ID: {producto[0]}, Producto: {producto[1]}, Descripción: {producto[2]}, Cantidad: {producto[3]}, Precio: $ {producto[4]:.2f}, Categoria: {producto[5]}")
+        while True: 
+            nombre = input("Ingrese el nombre del producto: ").strip().lower()
+            if nombre != "":
+                break
+            else:
+                print(Fore.RED + "El nombre del producto NO puede quedar vacio. " + Style.RESET_ALL)
+
+        while True: 
+            descripcion = input("Ingrese una breve descripción del producto: ").strip().lower()
+            if descripcion != "":
+                break
+            else:
+                print(Fore.RED + "La descripción del producto NO puede quedar vacio. " + Style.RESET_ALL)
+
+        while True:
+            try:
+                cantidad = float(input("Ingrese la cantidad producto: "))
+                if cantidad > 0:
+                        break
+                else:
+                    print(Fore.RED + "La cantidad del producto NO puede ser menor a 0. " + Style.RESET_ALL)
+            except ValueError:
+                print(Fore.RED + "Entrada inválida. Por favor, ingrese un número para la cantidad.\n" + Style.RESET_ALL)
+
+        while True:
+            try:
+                precio = float(input("Ingrese el precio del producto: "))
+                if precio > 0:
+                    break
+                else:
+                    print(Fore.RED + "El precio del producto NO puede ser menor a 0. " + Style.RESET_ALL)
+            except ValueError:
+                print(Fore.RED + "Entrada inválida. Por favor, ingrese un número para el precio.\n" + Style.RESET_ALL)
+            
+        while True: 
+            categoria = input("Ingrese la categoria del producto: ").strip().lower()
+            if categoria != "":
+                break
+            else:
+                print(Fore.RED + "La categoria del producto NO puede quedar vacio. " + Style.RESET_ALL)
 
         cursor.execute('''
             UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ?, precio = ?, categoria = ?
@@ -99,7 +136,7 @@ def reporte_bajo_stock(cantidad_unidades):
 
 def main(): # Menú interactivo
     while True:
-        print(Fore.BLUE + "======Menú de Opciones======" + Style.RESET_ALL)
+        print(Fore.BLUE + f"\n======Menú de Opciones======" + Style.RESET_ALL)
         print("1. Registrar producto")
         print("2. Ver todos los productos")
         print("3. Buscar por ID")
@@ -112,14 +149,14 @@ def main(): # Menú interactivo
         opcion = input("Seleccione una opción: ")
         if opcion == "1": # Agregar producto
             while True: 
-                nombre_producto = input("Ingrese el nombre del producto: ").strip()
+                nombre_producto = input("Ingrese el nombre del producto: ").strip().lower()
                 if nombre_producto != "":
                     break
                 else:
                     print(Fore.RED + "El nombre del producto NO puede quedar vacio. " + Style.RESET_ALL)
 
             while True: 
-                descripcion_producto = input("Ingrese una breve descripción del producto: ").strip()
+                descripcion_producto = input("Ingrese una breve descripción del producto: ").strip().lower()
                 if descripcion_producto != "":
                     break
                 else:
@@ -146,7 +183,7 @@ def main(): # Menú interactivo
                     print(Fore.RED + "Entrada inválida. Por favor, ingrese un número para el precio.\n" + Style.RESET_ALL)
             
             while True: 
-                categoria_producto = input("Ingrese la categoria del producto: ").strip()
+                categoria_producto = input("Ingrese la categoria del producto: ").strip().lower()
                 if categoria_producto != "":
                     break
                 else:
@@ -162,8 +199,8 @@ def main(): # Menú interactivo
             buscar_producto(id_producto)
 
         elif opcion == '4':  # Busca producto en el inventario por su nombre
-            nombre_producto = input("Ingrese el nombre del producto: ").strip()
-            buscar_producto(nombre_producto)
+            nombre_producto = input("Ingrese el nombre del producto: ").strip().lower()
+            buscar_producto_nombre(nombre_producto)
 
         elif opcion == '5':
             id_producto = input("Ingrese el ID del producto que desea actualizar: ").strip()
@@ -174,7 +211,7 @@ def main(): # Menú interactivo
             eliminar_producto(id_producto)
 
         elif opcion == '7': 
-            cantidad_unidades = int(input("Ingrese la cantidad de unidades que por las que desea consultar el stock: "))
+            cantidad_unidades = int(input("Ingrese la cantidad de unidades por las que desea consultar el stock: "))
             reporte_bajo_stock(cantidad_unidades)
 
         elif opcion == '8':
